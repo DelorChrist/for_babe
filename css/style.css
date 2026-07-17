@@ -1666,6 +1666,13 @@ button {
   }
 }
 
+/* ── CACHER LE VOLUME SUR MOBILE (Non supporté par iOS/Android) ── */
+@media (hover: none) and (pointer: coarse) {
+  .music-player__volume {
+    display: none;
+  }
+}
+
 /* ============================================================
    RESPONSIVE — Mobile
    ============================================================ */

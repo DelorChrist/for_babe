@@ -486,18 +486,13 @@ const LoveLetter = (() => {
 
     // Ouvrir l'enveloppe (flap se lève)
     envelope.classList.add('open');
-    await sleep(900);
+    await sleep(500);
 
-    // Faire glisser la lettre
+    // Faire glisser la lettre physiquement hors de l'enveloppe
     letter.classList.add('visible');
     await sleep(400);
 
-    // Masquer l'enveloppe une fois ouverte
-    envelope.style.opacity = '0';
-    envelope.style.transform = 'scale(0.8)';
-    envelope.style.transition = 'all 0.5s ease';
-    await sleep(500);
-    envelope.style.display = 'none';
+    // On laisse l'enveloppe visible en arrière-plan !
   }
 
   function init() {
@@ -760,9 +755,6 @@ const Restart = (() => {
         const letter = $('#letter');
         if (envelope) {
           envelope.classList.remove('open');
-          envelope.style.opacity = '';
-          envelope.style.transform = '';
-          envelope.style.display = '';
         }
         if (letter) letter.classList.remove('visible');
       }
@@ -841,6 +833,51 @@ const ScrollAnimations = (() => {
 })();
 
 /* ============================================================
+   MODULE : CURSEUR PERSONNALISÉ
+   ============================================================ */
+const CustomCursor = (() => {
+  function init() {
+    if (window.matchMedia('(pointer: coarse)').matches) return; // Ignore sur mobile/tactile
+
+    const dot = document.createElement('div');
+    dot.className = 'custom-cursor-dot';
+    document.body.appendChild(dot);
+
+    const ring = document.createElement('div');
+    ring.className = 'custom-cursor-ring';
+    document.body.appendChild(ring);
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    });
+
+    function render() {
+      ringX += (mouseX - ringX) * 0.2;
+      ringY += (mouseY - ringY) * 0.2;
+      ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    // Ajouter classe hover sur les éléments interactifs
+    const interactives = document.querySelectorAll('a, button, .stat-card, input, textarea, .envelope, .timeline-item');
+    interactives.forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+  }
+
+  return { init };
+})();
+
+/* ============================================================
    POINT D'ENTRÉE PRINCIPAL
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -856,7 +893,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Animations au défilement
   ScrollAnimations.init();
 
-  // 5. Splash → Home → Landing
+  // 5. Curseur personnalisé
+  CustomCursor.init();
+
+  // 6. Splash → Home → Landing
   Splash.run(() => {
     HomeScreen.show(async () => {
       await sleep(300);

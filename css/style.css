@@ -1246,7 +1246,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 0; /* Changé pour permettre la superposition */
 }
 
 /* Enveloppe */
@@ -1255,6 +1255,17 @@ button {
   height: 110px;
   position: relative;
   cursor: default;
+  margin-bottom: -90px; /* Tire la lettre vers le haut derrière l'enveloppe */
+}
+
+/* Arrière de l'enveloppe (l'intérieur) */
+.envelope::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #E63973;
+  border-radius: var(--radius-sm);
+  z-index: 1;
 }
 
 .envelope__body {
@@ -1268,6 +1279,7 @@ button {
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  z-index: 3; /* Devant la lettre */
 }
 
 .envelope__flap {
@@ -1277,12 +1289,13 @@ button {
   background: linear-gradient(135deg, #FF8FAB, #FF5D8F);
   clip-path: polygon(0 0, 50% 65%, 100% 0);
   transform-origin: top center;
-  transition: transform 0.8s var(--ease-smooth);
-  z-index: 2;
+  transition: transform 0.8s var(--ease-smooth), z-index 0s 0.3s;
+  z-index: 4; /* Devant l'enveloppe fermée */
 }
 
 .envelope.open .envelope__flap {
   transform: rotateX(180deg);
+  z-index: 0; /* Passe derrière quand elle s'ouvre */
 }
 
 .envelope__seal { font-size: 1.8rem; position: relative; z-index: 1; }
@@ -1295,14 +1308,18 @@ button {
   box-shadow: var(--shadow-md);
   border: 1px solid rgba(255,93,143,0.1);
   width: 100%;
-  transform: translateY(20px) scale(0.95);
+  position: relative;
+  z-index: 2; /* Entre l'arrière (1) et l'avant (3) de l'enveloppe */
+  transform: translateY(0) scale(0.3);
   opacity: 0;
-  transition: all 0.8s var(--ease-smooth);
+  transform-origin: top center;
+  transition: transform 1.2s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.8s, margin-bottom 1.2s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
 .letter.visible {
-  transform: translateY(0) scale(1);
+  transform: translateY(120px) scale(1);
   opacity: 1;
+  margin-bottom: 120px; /* Pousse le bouton 'Recommencer' vers le bas */
 }
 
 .letter__header {
@@ -1546,6 +1563,53 @@ button {
 }
 .animate-on-scroll.slide-right.in-view {
   transform: translateX(0);
+}
+
+/* ============================================================
+   CURSEUR PERSONNALISÉ
+   ============================================================ */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  
+  a, button, .stat-card, input, select, textarea {
+    cursor: none !important;
+  }
+  
+  .custom-cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 6px; height: 6px;
+    background: var(--color-primary-dk);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.2s, width 0.2s, height 0.2s;
+  }
+
+  .custom-cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    width: 32px; height: 32px;
+    border: 1.5px solid rgba(255, 93, 143, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out, width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+  }
+
+  body.cursor-hover .custom-cursor-dot {
+    background: transparent;
+  }
+  
+  body.cursor-hover .custom-cursor-ring {
+    width: 50px; height: 50px;
+    border-color: var(--color-primary-dk);
+    background: rgba(255, 93, 143, 0.08);
+  }
 }
 
 .animate-on-scroll.zoom-in {

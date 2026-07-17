@@ -490,9 +490,16 @@ const LoveLetter = (() => {
 
     // Faire glisser la lettre physiquement hors de l'enveloppe
     letter.classList.add('visible');
-    await sleep(400);
+    await sleep(1000);
 
-    // On laisse l'enveloppe visible en arrière-plan !
+    // Faire disparaître l'enveloppe en douceur
+    envelope.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    envelope.style.opacity = '0';
+    envelope.style.transform = 'scale(0.8)';
+    
+    // Attendre un peu puis faire glisser la lettre vers le haut
+    await sleep(400);
+    letter.classList.add('move-up');
   }
 
   function init() {
@@ -517,6 +524,7 @@ const MusicPlayer = (() => {
 
   let isPlaying = false;
   let isMuted   = false;
+  let previousVolume = 0.7;
 
   /* Icônes SVG inline pour l'état du lecteur */
   const SVG_PLAY  = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
@@ -553,10 +561,28 @@ const MusicPlayer = (() => {
     isPlaying ? pause() : play();
   }
 
+  function updateVolumeUI(val) {
+    if (volSlider) {
+      const pct = val * 100;
+      volSlider.style.background = `linear-gradient(90deg, var(--color-primary) ${pct}%, rgba(255,93,143,0.2) ${pct}%)`;
+    }
+  }
+
   function toggleMute() {
     if (!audio || !muteBtn) return;
     isMuted = !isMuted;
     audio.muted = isMuted;
+    
+    if (isMuted) {
+      previousVolume = parseFloat(volSlider.value);
+      volSlider.value = 0;
+      updateVolumeUI(0);
+    } else {
+      volSlider.value = previousVolume > 0 ? previousVolume : 0.7;
+      audio.volume = parseFloat(volSlider.value);
+      updateVolumeUI(parseFloat(volSlider.value));
+    }
+
     muteBtn.innerHTML = isMuted ? SVG_VOL_OFF : SVG_VOL_ON;
     muteBtn.setAttribute('aria-label', isMuted ? 'Rétablir le son' : 'Couper le son');
   }
@@ -584,13 +610,24 @@ const MusicPlayer = (() => {
     toggleBtn?.addEventListener('click', toggleCollapse);
 
     volSlider?.addEventListener('input', () => {
-      if (audio) audio.volume = parseFloat(volSlider.value);
-      if (isMuted && parseFloat(volSlider.value) > 0) {
+      const val = parseFloat(volSlider.value);
+      if (audio) audio.volume = val;
+      updateVolumeUI(val);
+      
+      if (isMuted && val > 0) {
         isMuted = false;
         if (audio) audio.muted = false;
         if (muteBtn) muteBtn.innerHTML = SVG_VOL_ON;
+      } else if (!isMuted && val === 0) {
+        isMuted = true;
+        if (audio) audio.muted = true;
+        if (muteBtn) muteBtn.innerHTML = SVG_VOL_OFF;
       }
     });
+
+    if (volSlider) {
+      updateVolumeUI(parseFloat(volSlider.value));
+    }
 
     // Keyboard accessibility
     [playBtn, muteBtn, toggleBtn].forEach(btn => {
@@ -755,8 +792,14 @@ const Restart = (() => {
         const letter = $('#letter');
         if (envelope) {
           envelope.classList.remove('open');
+          envelope.style.opacity = '';
+          envelope.style.transform = '';
+          envelope.style.transition = '';
         }
-        if (letter) letter.classList.remove('visible');
+        if (letter) {
+          letter.classList.remove('visible');
+          letter.classList.remove('move-up');
+        }
       }
 
       // Réinitialiser typewriter

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Un mois sans dispute" />
+  <title>Un mois sans dispute</title>
+  <link rel="icon" type="image/jpeg" href="images/girlfriend.jpeg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet" />
+
+  <!-- html2canvas & jsPDF pour le téléchargement du certificat -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Feuille de style principale -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <!-- Canvas de particules globales -->
+  <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+  <!-- ============================================================
+       ÉCRAN 1 : SPLASH SCREEN
+  ============================================================ -->
+  <section id="splash-screen" role="main" aria-label="Écran de bienvenue">
+    <div class="splash-hearts-container" aria-hidden="true"></div>
+
+    <div class="splash-content">
+      <div class="splash-heart" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </div>
+      <p class="splash-subtitle">Une surprise t'attend...</p>
+      <p class="splash-tagline">Merci d'être toujours toi.</p>
+
+      <div class="progress-bar-wrapper" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+        aria-label="Chargement">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ÉCRAN 2 : PAGE D'ACCUEIL
+  ============================================================ -->
+  <section id="home-screen" class="hidden" aria-label="Page d'accueil">
+    <div class="home-bg-overlay" aria-hidden="true"></div>
+    <div class="home-ring home-ring--1" aria-hidden="true"></div>
+    <div class="home-ring home-ring--2" aria-hidden="true"></div>
+    <div class="home-ring home-ring--3" aria-hidden="true"></div>
+
+    <div class="home-content">
+      <p class="home-pre-title">Quelque chose de spécial t'attend...</p>
+      <h1 class="home-title">Un mois<br /><span class="home-title--highlight">sans dispute</span></h1>
+      <p class="home-description">30 jours de paix, d'amour et de complicité.<br />Appuie pour découvrir ta surprise</p>
+
+      <button id="cta-button" class="cta-btn" aria-label="Cliquer pour découvrir la surprise">
+        <span class="cta-btn__text">Clique ici</span>
+      </button>
+    </div>
+
+    <div id="confetti-container" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============================================================
+       ÉCRAN 3 : LANDING PAGE
+  ============================================================ -->
+  <main id="landing-page" class="hidden" aria-label="Page principale">
+
+    <!-- HERO -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-inner">
+        <div class="hero-badge">30 Jours de Bonheur</div>
+        <h2 id="hero-title" class="hero-title">
+          Un mois<br />sans dispute <span class="hero-heart"> ça mérite cette petite attention❤️</span>
+        </h2>
+
+        <div class="hero-stats" role="list">
+          <div class="hero-stat" role="listitem">
+            <span class="hero-stat__number">30</span>
+            <span class="hero-stat__label">Jours</span>
+          </div>
+          <div class="hero-stat-divider" aria-hidden="true">•</div>
+          <div class="hero-stat" role="listitem">
+            <span class="hero-stat__number">720</span>
+            <span class="hero-stat__label">Heures</span>
+          </div>
+          <div class="hero-stat-divider" aria-hidden="true">•</div>
+          <div class="hero-stat" role="listitem">
+            <span class="hero-stat__number">43 200</span>
+            <span class="hero-stat__label">Minutes</span>
+          </div>
+        </div>
+
+        <p class="hero-tagline">Sans une seule dispute. Et je suis fier de nous. 💕</p>
+      </div>
+    </section>
+
+    <!-- PHOTO + MESSAGE -->
+    <section class="profile-section" aria-label="Photo et message">
+      <div class="profile-photo-wrapper">
+        <div class="profile-photo-ring" aria-hidden="true"></div>
+        <img src="images/girlfriend.jpeg" alt="Ma petite amie, celle qui illumine ma vie" class="profile-photo"
+          loading="lazy" />
+        <div class="profile-badge" aria-hidden="true"><i data-lucide="heart"></i></div>
+      </div>
+
+      <div class="message-card" aria-label="Message d'amour">
+        <p id="typewriter-text" class="message-text" aria-live="polite"></p>
+        <span class="typewriter-cursor" aria-hidden="true">|</span>
+      </div>
+    </section>
+
+    <!-- STATISTIQUES -->
+    <section class="stats-section" aria-label="Nos statistiques">
+      <h3 class="section-title">Nos chiffres</h3>
+      <p class="stats-hint">Clique sur chaque carte pour découvrir</p>
+
+      <div class="stats-grid" role="list">
+
+        <!-- Disputes -->
+        <article class="stat-card" role="listitem" aria-label="Disputes : 0" tabindex="0" aria-pressed="false">
+          <div class="flip-card__inner">
+            <div class="flip-card__front flip-card__front--rose">
+              <i data-lucide="shield-check" class="flip-front-icon" aria-hidden="true"></i>
+              <span class="flip-card__name">Disputes</span>
+              <span class="flip-card__teaser">Notre secret</span>
+            </div>
+            <div class="flip-card__back">
+              <div class="stat-card__value" data-target="0" data-suffix="">0</div>
+              <div class="stat-card__sublabel">Absolument zéro</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sourires -->
+        <article class="stat-card" role="listitem" aria-label="Sourires : infini" tabindex="0" aria-pressed="false">
+          <div class="flip-card__inner">
+            <div class="flip-card__front flip-card__front--fuchsia">
+              <i data-lucide="smile" class="flip-front-icon" aria-hidden="true"></i>
+              <span class="flip-card__name">Sourires</span>
+              <span class="flip-card__teaser">Compte-les...</span>
+            </div>
+            <div class="flip-card__back">
+              <div class="stat-card__value" data-target="infinity">∞</div>
+              <div class="stat-card__sublabel">Chaque jour</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Patience -->
+        <article class="stat-card" role="listitem" aria-label="Patience : 100%" tabindex="0" aria-pressed="false">
+          <div class="flip-card__inner">
+            <div class="flip-card__front flip-card__front--pink">
+              <i data-lucide="flower-2" class="flip-front-icon" aria-hidden="true"></i>
+              <span class="flip-card__name">Patience</span>
+              <span class="flip-card__teaser">Notre superpower</span>
+            </div>
+            <div class="flip-card__back">
+              <div class="stat-card__value" data-target="100" data-suffix="%">0%</div>
+              <div class="stat-card__sublabel">Toujours</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Amour -->
+        <article class="stat-card" role="listitem" aria-label="Amour : infini" tabindex="0" aria-pressed="false">
+          <div class="flip-card__inner">
+            <div class="flip-card__front flip-card__front--gold">
+              <i data-lucide="heart" class="flip-front-icon" aria-hidden="true"></i>
+              <span class="flip-card__name">Amour</span>
+              <span class="flip-card__teaser">Sans limite</span>
+            </div>
+            <div class="flip-card__back flip-card__back--gold">
+              <div class="stat-card__value flip-gold-value" data-target="infinity">Infini</div>
+              <div class="stat-card__sublabel">Et au-delà</div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- COMPTEUR ENSEMBLE -->
+    <section class="together-section" aria-label="Temps ensemble">
+      <div class="together-card">
+        <div class="together-card__icon" aria-hidden="true"><i data-lucide="users"></i></div>
+        <h3 class="together-card__title">Ensemble depuis</h3>
+        <div class="together-counter" aria-live="polite" aria-label="Nombre de jours ensemble">
+          <span id="days-together" class="together-counter__number">--</span>
+          <span class="together-counter__unit">jours</span>
+        </div>
+        <p class="together-card__sub">Et chaque jour compte</p>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="timeline-section" aria-label="Notre histoire">
+      <h3 class="section-title">Notre histoire</h3>
+
+      <div class="timeline" role="list">
+        <div class="timeline-item animate-on-scroll slide-left" role="listitem">
+          <div class="timeline-dot" aria-hidden="true"><i data-lucide="heart"></i></div>
+          <div class="timeline-content">
+            <h4 class="timeline-title">Notre rencontre</h4>
+            <p class="timeline-desc">Le jour où tout a commencé…</p>
+          </div>
+        </div>
+
+        <div class="timeline-item timeline-item--right animate-on-scroll slide-right" role="listitem">
+          <div class="timeline-dot" aria-hidden="true"><i data-lucide="calendar-heart"></i></div>
+          <div class="timeline-content">
+            <h4 class="timeline-title">Premier rendez-vous</h4>
+            <p class="timeline-desc">Un moment que je n'oublierai jamais.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item animate-on-scroll slide-left" role="listitem">
+          <div class="timeline-dot" aria-hidden="true"><i data-lucide="message-circle"></i></div>
+          <div class="timeline-content">
+            <h4 class="timeline-title">Premier "Je t'aime"</h4>
+            <p class="timeline-desc">Ces mots qui ont tout changé.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item timeline-item--right timeline-item--active animate-on-scroll slide-right" role="listitem">
+          <div class="timeline-dot timeline-dot--active" aria-hidden="true"><i data-lucide="trophy"></i></div>
+          <div class="timeline-content">
+            <h4 class="timeline-title">1 mois sans dispute</h4>
+            <p class="timeline-desc">Aujourd'hui, nous célébrons ça ensemble !</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICAT -->
+    <section class="certificate-section" aria-label="Certificat de félicitation">
+      <h3 class="section-title">Ton certificat officiel</h3>
+
+      <div id="certificate" class="certificate" role="document" aria-label="Certificat officiel">
+        <div class="certificate__border" aria-hidden="true"></div>
+        <div class="certificate__border certificate__border--inner" aria-hidden="true"></div>
+
+        <div class="certificate__seal" aria-hidden="true">
+          <div class="seal-inner"><i data-lucide="award"></i></div>
+          <div class="seal-text">OFFICIEL</div>
+        </div>
+
+        <div class="certificate__deco certificate__deco--tl" aria-hidden="true">✦</div>
+        <div class="certificate__deco certificate__deco--tr" aria-hidden="true">✦</div>
+        <div class="certificate__deco certificate__deco--bl" aria-hidden="true">✦</div>
+        <div class="certificate__deco certificate__deco--br" aria-hidden="true">✦</div>
+
+        <div class="certificate__body">
+          <p class="cert-pre">❤️ &nbsp; Avec tout mon amour &nbsp; ❤️</p>
+          <h2 class="cert-title">CERTIFICAT<br />DE FÉLICITATION</h2>
+          <div class="cert-divider" aria-hidden="true"></div>
+
+          <p class="cert-awarded-to">Ce certificat est officiellement décerné à</p>
+
+          <!-- ⚙️ MODIFIE ce texte par le vrai prénom de ta copine -->
+          <p class="cert-name" id="cert-recipient-name">Mon Amour</p>
+
+          <p class="cert-body">
+            pour avoir brillamment accompli<br />
+            <strong>30 jours</strong> sans aucune dispute.
+          </p>
+
+          <p class="cert-virtues">
+            Grâce à sa <em>patience</em>, sa <em>douceur</em>,<br />
+            sa <em>bienveillance</em> et son <em>amour</em>.
+          </p>
+
+          <p class="cert-engagement">
+            Ce certificat témoigne de son engagement<br />
+            à construire une relation remplie de <strong>paix</strong>,<br />
+            de <strong>compréhension</strong> et de <strong>bonheur</strong>.
+          </p>
+
+          <div class="cert-divider" aria-hidden="true"></div>
+
+          <div class="cert-footer">
+            <div class="cert-footer__block">
+              <div class="cert-signature" aria-label="Signature">
+                <!-- ⚙️ MODIFIE ce texte par ton vrai prénom -->
+                <span class="cert-signature__text">Ton Amour</span>
+              </div>
+              <p class="cert-footer__label">Décerné avec le coeur 😂</p>
+            </div>
+
+            <div class="cert-footer__block cert-footer__block--right">
+              <p class="cert-date" id="cert-date-display" aria-label="Date du certificat"></p>
+              <p class="cert-footer__label">Date officielle</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="download-cert-btn" class="download-btn" aria-label="Télécharger le certificat en PDF">
+        <i data-lucide="file-down" aria-hidden="true"></i>
+        Télécharger mon certificat
+      </button>
+    </section>
+
+    <!-- LETTRE -->
+    <section class="letter-section" aria-label="Lettre d'amour">
+      <button id="open-letter-btn" class="letter-trigger-btn" aria-label="Ouvrir la lettre d'amour"
+        aria-expanded="false" aria-controls="letter-container">
+        <i data-lucide="mail-open" aria-hidden="true"></i>
+        J'ai un dernier message...
+      </button>
+
+      <div id="letter-container" class="letter-container hidden" aria-live="polite">
+        <div class="envelope" id="envelope" aria-hidden="true">
+          <div class="envelope__flap"></div>
+          <div class="envelope__body">
+            <span class="envelope__seal"><i data-lucide="mail"></i></span>
+          </div>
+        </div>
+
+        <div class="letter" id="letter" aria-label="Lettre d'amour">
+          <div class="letter__header" aria-hidden="true"><i data-lucide="heart"></i></div>
+          <p class="letter__salutation">Mon amour,</p>
+          <div class="letter__body">
+            <p>Ce mois sans dispute n'est pas simplement un chiffre.</p>
+            <p>C'est la preuve que nous apprenons,<br />que nous grandissons ensemble<br />et que nous nous choisissons
+              chaque jour.</p>
+            <p>Merci d'être ma personne préférée.</p>
+            <p>Je souhaite que cette page ne soit que la première d'une longue série de souvenirs que nous créerons
+              ensemble.</p>
+          </div>
+          <p class="letter__closing">Je t'aime infiniment petite sorcière</p>
+          <p class="letter__signature">— Ton amour, pour toujours</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENCER -->
+    <section class="restart-section" aria-label="Recommencer l'expérience">
+      <button id="restart-btn" class="restart-btn" aria-label="Recommencer l'expérience depuis le début">
+        <i data-lucide="refresh-cw" aria-hidden="true"></i>
+        Recommencer l'expérience
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       LECTEUR AUDIO FLOTTANT
+  ============================================================ -->
+  <div id="music-player" class="music-player hidden" role="complementary" aria-label="Lecteur de musique">
+    <div class="music-player__header">
+      <span class="music-player__note" aria-hidden="true"><i data-lucide="music-2"></i></span>
+      <span class="music-player__title">Notre musique</span>
+      <button id="toggle-player-btn" class="music-player__toggle" aria-label="Réduire le lecteur"
+        aria-expanded="true">▼</button>
+    </div>
+
+    <div class="music-player__body" id="player-body">
+      <!-- ⚙️ Remplace le chemin par ton fichier audio -->
+      <audio id="audio-player" loop preload="none">
+        <source src="music/notre-musique.mp3" type="audio/mpeg" />
+        <source src="music/notre-musique.ogg" type="audio/ogg" />
+        Ton navigateur ne supporte pas l'audio HTML5.
+      </audio>
+
+      <div class="music-player__visualizer" aria-hidden="true">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span>
+      </div>
+
+      <div class="music-player__controls">
+        <button id="play-pause-btn" class="player-btn player-btn--main" aria-label="Lecture / Pause"><svg
+            xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+            stroke="none">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg></button>
+        <button id="mute-btn" class="player-btn" aria-label="Couper / Rétablir le son"><svg
+            xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg></button>
+      </div>
+
+      <div class="music-player__volume">
+        <label for="volume-slider" class="sr-only">Volume</label>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.05" value="0.7"
+          aria-label="Contrôle du volume" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Script principal -->
+  <script src="js/app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });</script>
+</body>
+
+</html>
